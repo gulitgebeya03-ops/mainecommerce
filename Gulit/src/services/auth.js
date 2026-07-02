@@ -1,4 +1,4 @@
-const BACKEND = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const BACKEND = import.meta.env.VITE_API_URL || 'http://localhost:5252';
 
 export async function register({ username, email, password, role, adminSecret }) {
   const res = await fetch(`${BACKEND}/api/auth/register`, {

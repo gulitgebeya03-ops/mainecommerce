@@ -32,6 +32,7 @@ import {
   Users,
   X,
 } from 'lucide-react';
+import ChatBot from './components/ChatBot';
 
 function RequireRole({ roles, children }) {
   const { userRole } = useContext(AppContext);
@@ -183,6 +184,8 @@ function App() {
           <Route path="/admin/settings" element={<RequireRole roles={['admin']}><Settings /></RequireRole>} />
         </Routes>
       </main>
+
+      {!isAdminRoute && <ChatBot />}
 
       <footer className="bg-gray-950 text-gray-300 border-t border-gray-900 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">

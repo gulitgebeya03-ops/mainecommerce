@@ -107,6 +107,8 @@ export const AppProvider = ({ children }) => {
       customerName: "Abebe Kebede",
       phoneNumber: "0911223344",
       deliveryAddress: "Bole, Khartoum St, Addis Ababa",
+      latitude: 9.0108,
+      longitude: 38.7892,
       items: [
         { id: 1, name: "MacBook Pro 14\"", price: 95000, quantity: 1 }
       ],
@@ -121,6 +123,8 @@ export const AppProvider = ({ children }) => {
       customerName: "Chaltu Ibrahim",
       phoneNumber: "0912345678",
       deliveryAddress: "Megenagna, Ring Road, Addis Ababa",
+      latitude: 9.0272,
+      longitude: 38.8025,
       items: [
         { id: 13, name: "Nike Air Max 270", price: 8500, quantity: 2 }
       ],
@@ -244,6 +248,8 @@ export const AppProvider = ({ children }) => {
       email: customerDetails.email || '',
       phoneNumber: customerDetails.phone,
       deliveryAddress: customerDetails.address,
+      latitude: customerDetails.latitude ?? null,
+      longitude: customerDetails.longitude ?? null,
       items: cart.map(item => ({
         id: item.product.id,
         name: item.product.name,

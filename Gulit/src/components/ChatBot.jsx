@@ -27,7 +27,7 @@ export default function ChatBot() {
       const res = await fetch(`${API_BASE}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMsg }),
+        body: JSON.stringify({ message: userMsg, history: [...messages, { role: 'user', text: userMsg }] }),
       });
       const data = await res.json();
       if (!res.ok) {

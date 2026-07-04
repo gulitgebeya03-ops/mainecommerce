@@ -1,6 +1,7 @@
-import { useContext } from "react";
+import { useContext, useMemo, useState } from "react";
 import { AppContext } from "../context/AppContext";
-import { Printer } from "lucide-react";
+import { MapPin, Printer } from "lucide-react";
+import MapLocation from "../components/MapLocation";
 
 const statuses = ["Pending", "Processing", "Shipped", "Delivered"];
 
@@ -13,6 +14,12 @@ const badgeClass = {
 
 const Orders = () => {
   const { orders, updateOrderStatus } = useContext(AppContext);
+  const ordersWithLocation = useMemo(
+    () => orders.filter((order) => Number.isFinite(Number(order.latitude)) && Number.isFinite(Number(order.longitude))),
+    [orders]
+  );
+  const [selectedMapOrder, setSelectedMapOrder] = useState(null);
+  const focusedOrder = selectedMapOrder || ordersWithLocation[0];
 
   const printInvoice = (order) => {
     const itemRows = order.items
@@ -47,7 +54,64 @@ const Orders = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-6">
         <h1 className="text-2xl font-black text-gray-900">Order Management</h1>
-        <p className="text-sm text-gray-500">View orders, update delivery status, and print invoices.</p>
+        <p className="text-sm text-gray-500">View orders, update delivery status, print invoices, and check delivery pins.</p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-4 mb-6">
+        <div className="bg-white rounded-lg border border-gray-100 shadow-sm p-4">
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <div>
+              <h2 className="text-sm font-black text-gray-900">Order Locations</h2>
+              <p className="text-xs text-gray-500">Customer delivery pins from checkout.</p>
+            </div>
+            <span className="text-xs font-bold text-gray-500">{ordersWithLocation.length} pinned</span>
+          </div>
+          {ordersWithLocation.length > 0 ? (
+            <MapLocation
+              value={focusedOrder}
+              interactive={false}
+              orders={ordersWithLocation}
+              selectedOrderId={focusedOrder?.id}
+              onSelectOrder={setSelectedMapOrder}
+              heightClass="h-80"
+            />
+          ) : (
+            <div className="h-80 rounded-lg border border-dashed border-gray-200 bg-gray-50 grid place-items-center text-sm font-bold text-gray-400">
+              No pinned order locations yet.
+            </div>
+          )}
+        </div>
+
+        <div className="bg-white rounded-lg border border-gray-100 shadow-sm p-4">
+          <h2 className="text-sm font-black text-gray-900 mb-3">Selected Delivery</h2>
+          {focusedOrder ? (
+            <div className="space-y-3 text-sm">
+              <div>
+                <p className="text-xs uppercase font-bold text-gray-400">Order</p>
+                <p className="font-black text-gray-900">{focusedOrder.id}</p>
+              </div>
+              <div>
+                <p className="text-xs uppercase font-bold text-gray-400">Customer</p>
+                <p className="font-bold text-gray-800">{focusedOrder.customerName}</p>
+                <p className="text-xs text-gray-500">{focusedOrder.phoneNumber}</p>
+              </div>
+              <div>
+                <p className="text-xs uppercase font-bold text-gray-400">Address</p>
+                <p className="text-gray-700">{focusedOrder.deliveryAddress}</p>
+              </div>
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${focusedOrder.latitude},${focusedOrder.longitude}`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-lg bg-orange-600 px-3 py-2 text-xs font-bold text-white hover:bg-orange-700"
+              >
+                <MapPin size={14} /> Open Directions
+              </a>
+            </div>
+          ) : (
+            <p className="text-sm text-gray-400">Select an order marker to see delivery details.</p>
+          )}
+        </div>
       </div>
 
       <div className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
@@ -60,6 +124,7 @@ const Orders = () => {
                 <th className="p-4 text-left text-xs uppercase text-gray-400">Items</th>
                 <th className="p-4 text-left text-xs uppercase text-gray-400">Total</th>
                 <th className="p-4 text-left text-xs uppercase text-gray-400">Status</th>
+                <th className="p-4 text-left text-xs uppercase text-gray-400">Map</th>
                 <th className="p-4 text-right text-xs uppercase text-gray-400">Invoice</th>
               </tr>
             </thead>
@@ -97,6 +162,19 @@ const Orders = () => {
                       </select>
                     </div>
                   </td>
+                  <td className="p-4">
+                    {Number.isFinite(Number(order.latitude)) && Number.isFinite(Number(order.longitude)) ? (
+                      <button
+                        type="button"
+                        onClick={() => setSelectedMapOrder(order)}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50"
+                      >
+                        <MapPin size={14} className="text-orange-600" /> View
+                      </button>
+                    ) : (
+                      <span className="text-xs font-bold text-gray-300">No pin</span>
+                    )}
+                  </td>
                   <td className="p-4 text-right">
                     <button type="button" onClick={() => printInvoice(order)} className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-900 text-white hover:bg-black text-xs font-bold">
                       <Printer size={14} /> Print
@@ -106,7 +184,7 @@ const Orders = () => {
               ))}
               {orders.length === 0 && (
                 <tr>
-                  <td colSpan="6" className="p-10 text-center text-gray-400">No orders yet.</td>
+                  <td colSpan="7" className="p-10 text-center text-gray-400">No orders yet.</td>
                 </tr>
               )}
             </tbody>

@@ -89,6 +89,8 @@ function mapOrderFromApi(apiOrder) {
     email: apiOrder.email || '',
     phoneNumber: apiOrder.phoneNumber || '',
     deliveryAddress: apiOrder.deliveryAddress || '',
+    latitude: apiOrder.latitude ?? null,
+    longitude: apiOrder.longitude ?? null,
     items: items.map((item) => ({
       id: item.productId || item.id,
       name: item.title || item.name,
@@ -123,6 +125,8 @@ function mapOrderToApi(order, paymentMethod = 'COD') {
     email: order.email || '',
     phoneNumber: order.phoneNumber,
     deliveryAddress: order.deliveryAddress,
+    latitude: order.latitude,
+    longitude: order.longitude,
     products: (order.items || []).map((item) => ({
       productId: item.id,
       title: item.name,

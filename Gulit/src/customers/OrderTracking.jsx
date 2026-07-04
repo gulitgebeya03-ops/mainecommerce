@@ -1,7 +1,8 @@
 // src/customers/OrderTracking.jsx
 import { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
-import { X, Search, PackageCheck } from 'lucide-react';
+import { X, Search, PackageCheck, MapPin } from 'lucide-react';
+import MapLocation from '../components/MapLocation';
 
 export default function OrderTracking({ onClose }) {
   const { orders } = useContext(AppContext);
@@ -23,7 +24,7 @@ export default function OrderTracking({ onClose }) {
   };
 
   const statuses = ["Pending", "Processing", "Shipped", "Delivered"];
-  const getStatusIndex = (status) => statuses.indexOf(status);
+  const getStatusIndex = (status) => Math.max(0, statuses.indexOf(status));
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -72,6 +73,15 @@ export default function OrderTracking({ onClose }) {
               <div className="flex justify-between"><span className="text-gray-400 font-medium">Current Status Code:</span> <span className="font-extrabold text-orange-600 bg-orange-50 px-2 py-0.5 rounded text-[10px] uppercase">{searchedOrder.status}</span></div>
             </div>
 
+            {Number.isFinite(Number(searchedOrder.latitude)) && Number.isFinite(Number(searchedOrder.longitude)) && (
+              <div>
+                <div className="flex items-center gap-1.5 mb-2 text-xs font-bold text-gray-500 uppercase">
+                  <MapPin size={14} className="text-orange-600" /> Delivery Pin
+                </div>
+                <MapLocation value={searchedOrder} interactive={false} heightClass="h-52" />
+              </div>
+            )}
+
             {/* Stepper Graph Timeline Visualizer */}
             <div className="relative pt-4 pb-2">
               <div className="absolute top-7 left-3 right-3 h-0.5 bg-gray-100 -z-10" />
@@ -106,7 +116,7 @@ export default function OrderTracking({ onClose }) {
               <div className="space-y-1">
                 {searchedOrder.items.map(i => (
                   <div key={i.id} className="flex justify-between text-xs text-gray-600 font-medium bg-gray-50/50 p-1.5 rounded">
-                    <span>{i.name} <span className="text-gray-400 text-[10px]">×{i.quantity}</span></span>
+                    <span>{i.name} <span className="text-gray-400 text-[10px]">x{i.quantity}</span></span>
                     <span className="font-bold text-gray-800">ETB {(i.price * i.quantity).toLocaleString()}</span>
                   </div>
                 ))}

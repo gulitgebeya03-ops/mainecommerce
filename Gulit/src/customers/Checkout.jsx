@@ -1,6 +1,7 @@
 import { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
-import { X, CheckCircle, Info } from 'lucide-react';
+import { X, CheckCircle, Info, MapPin } from 'lucide-react';
+import MapLocation from '../components/MapLocation';
 
 export default function Checkout({ onClose }) {
   const { cart, deliveryFee, placeOrder, startChapaPayment } = useContext(AppContext);
@@ -9,6 +10,8 @@ export default function Checkout({ onClose }) {
     email: '',
     phone: '',
     address: '',
+    latitude: null,
+    longitude: null,
   });
   const [errors, setErrors] = useState({});
   const [successOrderId, setSuccessOrderId] = useState(null);
@@ -27,6 +30,9 @@ export default function Checkout({ onClose }) {
     if (!formData.phone.trim()) errs.phone = "Phone number is required.";
     else if (!/^\+?[0-9]{9,13}$/.test(formData.phone.trim())) errs.phone = "Provide a valid contact number.";
     if (!formData.address.trim()) errs.address = "Delivery address is required.";
+    if (!Number.isFinite(Number(formData.latitude)) || !Number.isFinite(Number(formData.longitude))) {
+      errs.location = "Pin the delivery position on the map.";
+    }
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -146,6 +152,19 @@ export default function Checkout({ onClose }) {
                   className={`w-full p-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${errors.address ? 'border-red-400' : 'border-gray-200'}`}
                 />
                 {errors.address && <p className="text-red-500 text-[11px] mt-0.5">{errors.address}</p>}
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-bold text-gray-500 uppercase">Delivery Pin</label>
+                  <MapPin size={14} className="text-orange-600" />
+                </div>
+                <MapLocation
+                  value={formData}
+                  onChange={(location) => setFormData({ ...formData, ...location })}
+                  heightClass="h-48"
+                />
+                {errors.location && <p className="text-red-500 text-[11px] mt-0.5">{errors.location}</p>}
               </div>
             </div>
 

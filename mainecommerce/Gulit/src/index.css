@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@theme {
+  --color-gold: #C8A97E;
+  --color-gold-hover: #B8956A;
+  --color-gold-light: #F5EDE3;
+  --color-dark: #111111;
+  --color-dark-muted: #1A1A1A;
+  --color-surface: #FAFAFA;
+  --color-border-light: #E5E7EB;
+  --color-border-dark: #374151;
+  --color-text-primary: #111111;
+  --color-text-muted: #6B7280;
+  --animate-fade-in: fade-in 0.3s ease-out;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}

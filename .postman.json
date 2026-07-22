@@ -1,0 +1,384 @@
+{
+  "version": "0.1",
+  "project": {
+    "name": "GULIT E-Commerce API",
+    "baseUrl": "http://localhost:5252",
+    "description": "Shared backend for the GULIT storefront and admin dashboard"
+  },
+  "default": {
+    "workspace": "gulit-workspace",
+    "collection": "gulit-api",
+    "environment": "local"
+  },
+  "workspaces": {},
+  "collections": {
+    "gulit-api": {
+      "id": null,
+      "uid": null,
+      "name": "GULIT E-Commerce API",
+      "description": "All endpoints for the GULIT backend (auth, products, orders, users, admin)",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+      "definition": {
+        "info": {
+          "name": "GULIT E-Commerce API",
+          "description": "Shared backend used by both the GULIT storefront and the admin dashboard.",
+          "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+        },
+        "variable": [
+          { "key": "API_URL", "value": "http://localhost:5252", "enabled": true },
+          { "key": "admin_token", "value": "", "enabled": true },
+          { "key": "product_id", "value": "", "enabled": true },
+          { "key": "order_id", "value": "", "enabled": true }
+        ],
+        "item": [
+          {
+            "name": "Auth",
+            "item": [
+              {
+                "name": "Register",
+                "request": {
+                  "method": "POST",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "url": { "raw": "{{API_URL}}/api/auth/register", "host": ["{{API_URL}}"], "path": ["api", "auth", "register"] },
+                  "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"username\": \"testadmin\",\n  \"email\": \"admin@gulit.com\",\n  \"password\": \"Admin1234!\",\n  \"role\": \"admin\",\n  \"adminSecret\": \"change_this_admin_secret\"\n}"
+                  }
+                },
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                        "pm.test('Has email field', () => pm.expect(pm.response.json()).to.have.property('email'));"
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "Login (Admin)",
+                "request": {
+                  "method": "POST",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "url": { "raw": "{{API_URL}}/api/auth/login", "host": ["{{API_URL}}"], "path": ["api", "auth", "login"] },
+                  "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"email\": \"admin@gulit.com\",\n  \"password\": \"Admin1234!\"\n}"
+                  }
+                },
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                        "pm.test('Has access_token', function() {",
+                        "  const data = pm.response.json();",
+                        "  pm.expect(data).to.have.property('access_token');",
+                        "  pm.collectionVariables.set('admin_token', data.access_token);",
+                        "});"
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Products",
+            "item": [
+              {
+                "name": "Get All Products",
+                "request": {
+                  "method": "GET",
+                  "header": [],
+                  "url": { "raw": "{{API_URL}}/api/products", "host": ["{{API_URL}}"], "path": ["api", "products"] }
+                },
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                        "pm.test('Response is array', () => pm.expect(pm.response.json()).to.be.an('array'));",
+                        "const products = pm.response.json();",
+                        "if (products.length > 0) pm.collectionVariables.set('product_id', products[0]._id);"
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "Create Product (Admin)",
+                "request": {
+                  "method": "POST",
+                  "header": [
+                    { "key": "Content-Type", "value": "application/json" },
+                    { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                  ],
+                  "url": { "raw": "{{API_URL}}/api/products", "host": ["{{API_URL}}"], "path": ["api", "products"] },
+                  "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"title\": \"Test Product\",\n  \"description\": \"A test product\",\n  \"price\": 199.99,\n  \"stock\": 50,\n  \"category\": \"Electronics\",\n  \"images\": []\n}"
+                  }
+                },
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                        "pm.test('Has _id', function() {",
+                        "  const data = pm.response.json();",
+                        "  pm.expect(data).to.have.property('_id');",
+                        "  pm.collectionVariables.set('product_id', data._id);",
+                        "});"
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "Update Product (Admin)",
+                "request": {
+                  "method": "PUT",
+                  "header": [
+                    { "key": "Content-Type", "value": "application/json" },
+                    { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                  ],
+                  "url": { "raw": "{{API_URL}}/api/products/{{product_id}}", "host": ["{{API_URL}}"], "path": ["api", "products", "{{product_id}}"] },
+                  "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"title\": \"Updated Product\",\n  \"price\": 249.99,\n  \"stock\": 30\n}"
+                  }
+                },
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                        "pm.test('Title updated', () => pm.expect(pm.response.json().title).to.equal('Updated Product'));"
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "Delete Product (Admin)",
+                "request": {
+                  "method": "DELETE",
+                  "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+                  "url": { "raw": "{{API_URL}}/api/products/{{product_id}}", "host": ["{{API_URL}}"], "path": ["api", "products", "{{product_id}}"] }
+                },
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                        "pm.test('Success true', () => pm.expect(pm.response.json().success).to.be.true);"
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Orders",
+            "item": [
+              {
+                "name": "Get All Orders (Admin)",
+                "request": {
+                  "method": "GET",
+                  "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+                  "url": { "raw": "{{API_URL}}/api/orders", "host": ["{{API_URL}}"], "path": ["api", "orders"] }
+                },
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                        "pm.test('Response is array', () => pm.expect(pm.response.json()).to.be.an('array'));",
+                        "const orders = pm.response.json();",
+                        "if (orders.length > 0) pm.collectionVariables.set('order_id', orders[0]._id);"
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "Update Order Status (Admin)",
+                "request": {
+                  "method": "PUT",
+                  "header": [
+                    { "key": "Content-Type", "value": "application/json" },
+                    { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                  ],
+                  "url": { "raw": "{{API_URL}}/api/orders/{{order_id}}/status", "host": ["{{API_URL}}"], "path": ["api", "orders", "{{order_id}}", "status"] },
+                  "body": { "mode": "raw", "raw": "{ \"status\": \"Processing\" }" }
+                },
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                        "pm.test('orderStatus updated', () => pm.expect(pm.response.json().orderStatus).to.equal('Processing'));"
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Admin",
+            "item": [
+              {
+                "name": "Get Dashboard Stats",
+                "request": {
+                  "method": "GET",
+                  "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+                  "url": { "raw": "{{API_URL}}/api/admin/stats", "host": ["{{API_URL}}"], "path": ["api", "admin", "stats"] }
+                },
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                        "pm.test('Has all stat fields', function() {",
+                        "  const d = pm.response.json();",
+                        "  pm.expect(d).to.have.property('totalOrders');",
+                        "  pm.expect(d).to.have.property('totalCustomers');",
+                        "  pm.expect(d).to.have.property('totalProducts');",
+                        "  pm.expect(d).to.have.property('revenue');",
+                        "});"
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "Get Reports",
+                "request": {
+                  "method": "GET",
+                  "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+                  "url": { "raw": "{{API_URL}}/api/admin/reports?range=365", "host": ["{{API_URL}}"], "path": ["api", "admin", "reports"], "query": [{ "key": "range", "value": "365" }] }
+                },
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                        "pm.test('Response is array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "Get Settings",
+                "request": {
+                  "method": "GET",
+                  "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+                  "url": { "raw": "{{API_URL}}/api/admin/settings", "host": ["{{API_URL}}"], "path": ["api", "admin", "settings"] }
+                },
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                        "pm.test('Has storeName', () => pm.expect(pm.response.json()).to.have.property('storeName'));"
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "Update Settings",
+                "request": {
+                  "method": "PUT",
+                  "header": [
+                    { "key": "Content-Type", "value": "application/json" },
+                    { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                  ],
+                  "url": { "raw": "{{API_URL}}/api/admin/settings", "host": ["{{API_URL}}"], "path": ["api", "admin", "settings"] },
+                  "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"storeName\": \"GULIT Marketplace\",\n  \"email\": \"support@gulit.com\",\n  \"phone\": \"+251 900 000 000\",\n  \"address\": \"Addis Ababa, Ethiopia\"\n}"
+                  }
+                },
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                        "pm.test('storeName saved', () => pm.expect(pm.response.json().storeName).to.equal('GULIT Marketplace'));"
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Customers",
+            "item": [
+              {
+                "name": "Get Customers (Admin)",
+                "request": {
+                  "method": "GET",
+                  "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+                  "url": { "raw": "{{API_URL}}/api/users/customers", "host": ["{{API_URL}}"], "path": ["api", "users", "customers"] }
+                },
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                        "pm.test('Response is array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "environments": {
+    "local": {
+      "id": null,
+      "uid": null,
+      "name": "GULIT Local",
+      "variables": {
+        "API_URL": "http://localhost:5252"
+      }
+    }
+  }
+}

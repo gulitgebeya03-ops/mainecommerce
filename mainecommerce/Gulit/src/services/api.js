@@ -127,13 +127,8 @@ function mapOrderToApi(order, paymentMethod = 'COD') {
     email: order.email || '',
     phoneNumber: order.phoneNumber,
     deliveryAddress: order.deliveryAddress,
-<<<<<<< HEAD
     latitude: order.latitude ?? null,
     longitude: order.longitude ?? null,
-=======
-    latitude: order.latitude,
-    longitude: order.longitude,
->>>>>>> e0d365b9b0b0e4f76c7a1d4a0be1a2390b517306
     products: (order.items || []).map((item) => ({
       productId: item.id,
       title: item.name,

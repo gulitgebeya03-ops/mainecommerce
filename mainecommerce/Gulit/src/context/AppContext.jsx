@@ -329,13 +329,8 @@ export const AppProvider = ({ children }) => {
       email: customerDetails.email || '',
       phoneNumber: customerDetails.phone,
       deliveryAddress: customerDetails.address,
-<<<<<<< HEAD
       latitude: coords.latitude ?? null,
       longitude: coords.longitude ?? null,
-=======
-      latitude: customerDetails.latitude ?? null,
-      longitude: customerDetails.longitude ?? null,
->>>>>>> e0d365b9b0b0e4f76c7a1d4a0be1a2390b517306
       items: cart.map(item => ({
         id: item.product.id,
         name: item.product.name,

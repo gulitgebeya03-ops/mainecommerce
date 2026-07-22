@@ -1,6 +1,5 @@
 import { useState, useContext, useEffect, useRef } from 'react';
 import { AppContext } from '../context/AppContext';
-<<<<<<< HEAD
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getTileUrl, getAttribution } from '../services/map';
@@ -12,10 +11,6 @@ L.Icon.Default.mergeOptions({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
-=======
-import { X, Search, PackageCheck, MapPin } from 'lucide-react';
-import MapLocation from '../components/MapLocation';
->>>>>>> e0d365b9b0b0e4f76c7a1d4a0be1a2390b517306
 
 export default function OrderTracking({ onClose }) {
   const { orders, currentCustomer, userRole } = useContext(AppContext);
@@ -25,7 +20,6 @@ export default function OrderTracking({ onClose }) {
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
 
-<<<<<<< HEAD
   const statuses = ['Pending', 'Processing', 'Shipped', 'Delivered'];
   const getStatusIndex = (status) => statuses.indexOf(status);
   const isSignedInCustomer = Boolean(currentCustomer) && userRole === 'customer';
@@ -41,23 +35,6 @@ export default function OrderTracking({ onClose }) {
 
   useEffect(() => { if (isSignedInCustomer && visibleOrders.length > 0 && !selectedOrder) setSelectedOrder(visibleOrders[0]); }, [isSignedInCustomer, visibleOrders, selectedOrder]);
   useEffect(() => { const h = (e) => { if (e.key === 'Escape') onClose(); }; window.addEventListener('keydown', h); return () => window.removeEventListener('keydown', h); }, [onClose]);
-=======
-  const handleTrack = (e) => {
-    e.preventDefault();
-    setErrorMsg("");
-    setSearchedOrder(null);
-
-    const match = orders.find(o => o.id.toLowerCase() === trackId.trim().toLowerCase());
-    if (match) {
-      setSearchedOrder(match);
-    } else {
-      setErrorMsg("No active shipment records found with that matching Order ID.");
-    }
-  };
-
-  const statuses = ["Pending", "Processing", "Shipped", "Delivered"];
-  const getStatusIndex = (status) => Math.max(0, statuses.indexOf(status));
->>>>>>> e0d365b9b0b0e4f76c7a1d4a0be1a2390b517306
 
   useEffect(() => {
     if (!selectedOrder || !mapRef.current) return;
@@ -115,31 +92,12 @@ export default function OrderTracking({ onClose }) {
               <div className="flex justify-between"><span className="text-text-muted">Status</span><span className="font-bold text-gold bg-gold-light px-2 py-0.5 rounded-full text-[10px] uppercase">{selectedOrder.status}</span></div>
             </div>
 
-<<<<<<< HEAD
             {selectedOrder.latitude != null && selectedOrder.longitude != null && (
               <div className="rounded-xl overflow-hidden border border-border-light">
                 <div className="flex items-center gap-1.5 bg-surface px-4 py-2 border-b border-border-light"><MapPin size={12} className="text-gold" /><span className="text-[10px] font-semibold text-text-primary uppercase tracking-wider">Delivery Location</span></div>
                 <div ref={mapRef} className="h-44 w-full" />
               </div>
             )}
-=======
-            {Number.isFinite(Number(searchedOrder.latitude)) && Number.isFinite(Number(searchedOrder.longitude)) && (
-              <div>
-                <div className="flex items-center gap-1.5 mb-2 text-xs font-bold text-gray-500 uppercase">
-                  <MapPin size={14} className="text-orange-600" /> Delivery Pin
-                </div>
-                <MapLocation value={searchedOrder} interactive={false} heightClass="h-52" />
-              </div>
-            )}
-
-            {/* Stepper Graph Timeline Visualizer */}
-            <div className="relative pt-4 pb-2">
-              <div className="absolute top-7 left-3 right-3 h-0.5 bg-gray-100 -z-10" />
-              <div
-                className="absolute top-7 left-3 h-0.5 bg-orange-500 -z-10 transition-all duration-500"
-                style={{ width: `${(getStatusIndex(searchedOrder.status) / 3) * 100}%` }}
-              />
->>>>>>> e0d365b9b0b0e4f76c7a1d4a0be1a2390b517306
 
             <div className="relative pt-2 pb-1">
               <div className="absolute top-[15px] left-4 right-4 h-0.5 bg-border-light" />
@@ -158,7 +116,6 @@ export default function OrderTracking({ onClose }) {
               </div>
             </div>
 
-<<<<<<< HEAD
             <div className="border-t border-border-light pt-3">
               <p className="text-[10px] font-medium text-text-muted uppercase tracking-wider mb-2">Package Contents</p>
               {selectedOrder.items.map((item) => (
@@ -167,19 +124,6 @@ export default function OrderTracking({ onClose }) {
                   <span className="font-semibold text-text-primary">ETB {(item.price * item.quantity).toLocaleString()}</span>
                 </div>
               ))}
-=======
-            {/* Item Checklist Breakdown Summary */}
-            <div className="border-t border-gray-100 pt-4">
-              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Package Contents</h4>
-              <div className="space-y-1">
-                {searchedOrder.items.map(i => (
-                  <div key={i.id} className="flex justify-between text-xs text-gray-600 font-medium bg-gray-50/50 p-1.5 rounded">
-                    <span>{i.name} <span className="text-gray-400 text-[10px]">x{i.quantity}</span></span>
-                    <span className="font-bold text-gray-800">ETB {(i.price * i.quantity).toLocaleString()}</span>
-                  </div>
-                ))}
-              </div>
->>>>>>> e0d365b9b0b0e4f76c7a1d4a0be1a2390b517306
             </div>
           </div>
         )}

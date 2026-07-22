@@ -48,12 +48,6 @@ export default function ChatBot() {
     const userMsg = input.trim(); setInput('');
     setMessages((p) => [...p, { role: 'user', text: userMsg }]); setLoading(true);
     try {
-<<<<<<< HEAD
-      const res = await fetch(`${API_BASE}/api/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: userMsg }) });
-      let data = {}; try { data = await res.json(); } catch { data = {}; }
-      setMessages((p) => [...p, { role: 'bot', text: data.reply || data.message || buildLocalReply(userMsg) }]);
-    } catch { setMessages((p) => [...p, { role: 'bot', text: buildLocalReply(userMsg) }]); } finally { setLoading(false); }
-=======
       const res = await fetch(`${API_BASE}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -63,10 +57,10 @@ export default function ChatBot() {
       if (!res.ok) {
         setMessages(prev => [...prev, { role: 'bot', text: data.message || 'Something went wrong. Please try again.' }]);
       } else {
-        setMessages(prev => [...prev, { role: 'bot', text: data.reply }]);
+        setMessages(prev => [...prev, { role: 'bot', text: data.reply || buildLocalReply(userMsg) }]);
       }
     } catch {
-      setMessages(prev => [...prev, { role: 'bot', text: 'Connection error. Please try again later.' }]);
+      setMessages(prev => [...prev, { role: 'bot', text: buildLocalReply(userMsg) }]);
     } finally {
       setLoading(false);
     }
@@ -77,7 +71,6 @@ export default function ChatBot() {
       e.preventDefault();
       handleSend();
     }
->>>>>>> e0d365b9b0b0e4f76c7a1d4a0be1a2390b517306
   };
 
   return (

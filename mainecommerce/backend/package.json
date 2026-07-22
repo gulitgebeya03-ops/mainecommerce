@@ -20,11 +20,7 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.7.1",
-<<<<<<< HEAD
     "resend": "^6.18.0"
-=======
-    "opencode": "^1.0.0"
->>>>>>> e0d365b9b0b0e4f76c7a1d4a0be1a2390b517306
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { useContext, useEffect, useRef, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import L from 'leaflet';
@@ -20,7 +19,7 @@ function OrderLocationMap({ order }) {
   useEffect(() => {
     const lat = order.latitude;
     const lng = order.longitude;
-    if (lat == null || lng == null) return null;
+    if (lat == null || lng == null) return;
     if (!mapRef.current) return;
 
     if (instance.current) {
@@ -53,12 +52,6 @@ function OrderLocationMap({ order }) {
     </div>
   );
 }
-=======
-import { useContext, useMemo, useState } from "react";
-import { AppContext } from "../context/AppContext";
-import { MapPin, Printer } from "lucide-react";
-import MapLocation from "../components/MapLocation";
->>>>>>> e0d365b9b0b0e4f76c7a1d4a0be1a2390b517306
 
 const statuses = ["Pending", "Processing", "Shipped", "Delivered"];
 
@@ -71,16 +64,7 @@ const badgeClass = {
 
 const Orders = () => {
   const { orders, updateOrderStatus } = useContext(AppContext);
-<<<<<<< HEAD
   const [expandedOrderId, setExpandedOrderId] = useState(null);
-=======
-  const ordersWithLocation = useMemo(
-    () => orders.filter((order) => Number.isFinite(Number(order.latitude)) && Number.isFinite(Number(order.longitude))),
-    [orders]
-  );
-  const [selectedMapOrder, setSelectedMapOrder] = useState(null);
-  const focusedOrder = selectedMapOrder || ordersWithLocation[0];
->>>>>>> e0d365b9b0b0e4f76c7a1d4a0be1a2390b517306
 
   const printInvoice = (order) => {
     const itemRows = order.items
@@ -114,70 +98,8 @@ const Orders = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-6">
-<<<<<<< HEAD
         <h1 className="text-2xl font-bold text-dark tracking-tight">Order Management</h1>
         <p className="text-sm text-text-muted">View orders, update delivery status, and print invoices.</p>
-=======
-        <h1 className="text-2xl font-black text-gray-900">Order Management</h1>
-        <p className="text-sm text-gray-500">View orders, update delivery status, print invoices, and check delivery pins.</p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-4 mb-6">
-        <div className="bg-white rounded-lg border border-gray-100 shadow-sm p-4">
-          <div className="flex items-center justify-between gap-3 mb-3">
-            <div>
-              <h2 className="text-sm font-black text-gray-900">Order Locations</h2>
-              <p className="text-xs text-gray-500">Customer delivery pins from checkout.</p>
-            </div>
-            <span className="text-xs font-bold text-gray-500">{ordersWithLocation.length} pinned</span>
-          </div>
-          {ordersWithLocation.length > 0 ? (
-            <MapLocation
-              value={focusedOrder}
-              interactive={false}
-              orders={ordersWithLocation}
-              selectedOrderId={focusedOrder?.id}
-              onSelectOrder={setSelectedMapOrder}
-              heightClass="h-80"
-            />
-          ) : (
-            <div className="h-80 rounded-lg border border-dashed border-gray-200 bg-gray-50 grid place-items-center text-sm font-bold text-gray-400">
-              No pinned order locations yet.
-            </div>
-          )}
-        </div>
-
-        <div className="bg-white rounded-lg border border-gray-100 shadow-sm p-4">
-          <h2 className="text-sm font-black text-gray-900 mb-3">Selected Delivery</h2>
-          {focusedOrder ? (
-            <div className="space-y-3 text-sm">
-              <div>
-                <p className="text-xs uppercase font-bold text-gray-400">Order</p>
-                <p className="font-black text-gray-900">{focusedOrder.id}</p>
-              </div>
-              <div>
-                <p className="text-xs uppercase font-bold text-gray-400">Customer</p>
-                <p className="font-bold text-gray-800">{focusedOrder.customerName}</p>
-                <p className="text-xs text-gray-500">{focusedOrder.phoneNumber}</p>
-              </div>
-              <div>
-                <p className="text-xs uppercase font-bold text-gray-400">Address</p>
-                <p className="text-gray-700">{focusedOrder.deliveryAddress}</p>
-              </div>
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${focusedOrder.latitude},${focusedOrder.longitude}`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-lg bg-orange-600 px-3 py-2 text-xs font-bold text-white hover:bg-orange-700"
-              >
-                <MapPin size={14} /> Open Directions
-              </a>
-            </div>
-          ) : (
-            <p className="text-sm text-gray-400">Select an order marker to see delivery details.</p>
-          )}
-        </div>
->>>>>>> e0d365b9b0b0e4f76c7a1d4a0be1a2390b517306
       </div>
 
       <div className="bg-white rounded-xl border border-border-light shadow-sm overflow-hidden">
@@ -185,22 +107,12 @@ const Orders = () => {
           <table className="w-full text-sm">
             <thead className="bg-surface">
               <tr>
-<<<<<<< HEAD
                 <th className="p-4 text-left text-xs font-semibold uppercase text-text-muted tracking-wider">Order</th>
                 <th className="p-4 text-left text-xs font-semibold uppercase text-text-muted tracking-wider">Customer</th>
                 <th className="p-4 text-left text-xs font-semibold uppercase text-text-muted tracking-wider">Items</th>
                 <th className="p-4 text-left text-xs font-semibold uppercase text-text-muted tracking-wider">Total</th>
                 <th className="p-4 text-left text-xs font-semibold uppercase text-text-muted tracking-wider">Status</th>
                 <th className="p-4 text-right text-xs font-semibold uppercase text-text-muted tracking-wider">Invoice</th>
-=======
-                <th className="p-4 text-left text-xs uppercase text-gray-400">Order</th>
-                <th className="p-4 text-left text-xs uppercase text-gray-400">Customer</th>
-                <th className="p-4 text-left text-xs uppercase text-gray-400">Items</th>
-                <th className="p-4 text-left text-xs uppercase text-gray-400">Total</th>
-                <th className="p-4 text-left text-xs uppercase text-gray-400">Status</th>
-                <th className="p-4 text-left text-xs uppercase text-gray-400">Map</th>
-                <th className="p-4 text-right text-xs uppercase text-gray-400">Invoice</th>
->>>>>>> e0d365b9b0b0e4f76c7a1d4a0be1a2390b517306
               </tr>
             </thead>
             <tbody>
@@ -251,19 +163,6 @@ const Orders = () => {
                       </select>
                     </div>
                   </td>
-                  <td className="p-4">
-                    {Number.isFinite(Number(order.latitude)) && Number.isFinite(Number(order.longitude)) ? (
-                      <button
-                        type="button"
-                        onClick={() => setSelectedMapOrder(order)}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50"
-                      >
-                        <MapPin size={14} className="text-orange-600" /> View
-                      </button>
-                    ) : (
-                      <span className="text-xs font-bold text-gray-300">No pin</span>
-                    )}
-                  </td>
                   <td className="p-4 text-right">
                     <button type="button" onClick={() => printInvoice(order)} className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-dark text-white hover:bg-gray-800 text-xs font-semibold">
                       <Printer size={14} /> Print
@@ -273,11 +172,7 @@ const Orders = () => {
               ))}
               {orders.length === 0 && (
                 <tr>
-<<<<<<< HEAD
                   <td colSpan="6" className="p-10 text-center text-text-muted">No orders yet.</td>
-=======
-                  <td colSpan="7" className="p-10 text-center text-gray-400">No orders yet.</td>
->>>>>>> e0d365b9b0b0e4f76c7a1d4a0be1a2390b517306
                 </tr>
               )}
             </tbody>

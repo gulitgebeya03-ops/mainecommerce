@@ -3,9 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { AppContext } from '../context/AppContext';
-<<<<<<< HEAD
 import { geocodeFirst, getTileUrl, getAttribution } from '../services/map';
-import { X, CheckCircle, Info, MapPin, ChevronDown } from 'lucide-react';
+import { X, CheckCircle, MapPin, ChevronDown } from 'lucide-react';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -18,21 +17,6 @@ export default function Checkout({ onClose }) {
   const { cart, deliveryFee, placeOrder, startChapaPayment, currentCustomer, userRole } = useContext(AppContext);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', phone: '', address: '' });
-=======
-import { X, CheckCircle, Info, MapPin } from 'lucide-react';
-import MapLocation from '../components/MapLocation';
-
-export default function Checkout({ onClose }) {
-  const { cart, deliveryFee, placeOrder, startChapaPayment } = useContext(AppContext);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    latitude: null,
-    longitude: null,
-  });
->>>>>>> e0d365b9b0b0e4f76c7a1d4a0be1a2390b517306
   const [errors, setErrors] = useState({});
   const [successOrderId, setSuccessOrderId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -52,7 +36,6 @@ export default function Checkout({ onClose }) {
 
   const validate = () => {
     const errs = {};
-<<<<<<< HEAD
     if (!formData.firstName.trim()) errs.firstName = 'Required';
     if (!formData.lastName.trim()) errs.lastName = 'Required';
     const normalizedEmail = formData.email.trim().toLowerCase();
@@ -64,18 +47,6 @@ export default function Checkout({ onClose }) {
     if (!formData.phone.trim()) errs.phone = 'Required';
     else if (!/^\+?[0-9]{9,13}$/.test(formData.phone.trim())) errs.phone = 'Invalid number';
     if (!formData.address.trim()) errs.address = 'Required';
-=======
-    if (!formData.name.trim()) errs.name = "Customer name is required.";
-    if (paymentMethod === 'CHAPA' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
-      errs.email = "Email is required for Chapa payment.";
-    }
-    if (!formData.phone.trim()) errs.phone = "Phone number is required.";
-    else if (!/^\+?[0-9]{9,13}$/.test(formData.phone.trim())) errs.phone = "Provide a valid contact number.";
-    if (!formData.address.trim()) errs.address = "Delivery address is required.";
-    if (!Number.isFinite(Number(formData.latitude)) || !Number.isFinite(Number(formData.longitude))) {
-      errs.location = "Pin the delivery position on the map.";
-    }
->>>>>>> e0d365b9b0b0e4f76c7a1d4a0be1a2390b517306
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -206,19 +177,6 @@ export default function Checkout({ onClose }) {
                 </label>
                 <textarea rows="3" placeholder="Subcity, neighborhood, building..." value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className={`${inputClass('address')} resize-none`} />
                 {errors.address && <p className="text-red-500 text-[10px] mt-1">{errors.address}</p>}
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs font-bold text-gray-500 uppercase">Delivery Pin</label>
-                  <MapPin size={14} className="text-orange-600" />
-                </div>
-                <MapLocation
-                  value={formData}
-                  onChange={(location) => setFormData({ ...formData, ...location })}
-                  heightClass="h-48"
-                />
-                {errors.location && <p className="text-red-500 text-[11px] mt-0.5">{errors.location}</p>}
               </div>
             </div>
 

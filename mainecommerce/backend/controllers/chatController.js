@@ -140,16 +140,9 @@ exports.chat = async (req, res) => {
       return res.status(400).json({ message: 'Message is required' });
     }
 
-<<<<<<< HEAD
-    const apiKey = process.env.OPENROUTER_API_KEY;
-    const systemPrompt = `You are the customer support assistant for ${STORE_PROFILE.name}. Use this store information when answering: ${STORE_PROFILE.about} ${STORE_PROFILE.orderFlow} ${STORE_PROFILE.delivery} ${STORE_PROFILE.support} Available products: ${STORE_PRODUCTS.map((product) => `${product.name} - ${formatPrice(product.price)} (${product.category}, ${product.stock} in stock)`).join('; ')}.`;
-
-    if (!apiKey) {
-      return res.json({ reply: buildFallbackReply(message), fallback: true, source: 'local' });
-=======
     const apiKey = process.env.OPENROUTER_API_KEY || process.env.OPEN_RUTER_API_KEY;
     if (!apiKey) {
-      return res.status(500).json({ message: 'OpenRouter API key not configured. Define OPENROUTER_API_KEY in your backend .env.' });
+      return res.json({ reply: buildFallbackReply(message), fallback: true, source: 'local' });
     }
 
     const inventoryContext = await buildInventoryContext();
@@ -168,21 +161,13 @@ exports.chat = async (req, res) => {
 
     if (message && message.trim()) {
       conversationMessages.push({ role: 'user', content: message.trim() });
->>>>>>> e0d365b9b0b0e4f76c7a1d4a0be1a2390b517306
     }
 
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
         model: FREE_MODEL,
-<<<<<<< HEAD
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: message },
-        ],
-=======
         messages: [...systemMessages, ...contextMessages, ...conversationMessages],
->>>>>>> e0d365b9b0b0e4f76c7a1d4a0be1a2390b517306
       },
       {
         headers: {

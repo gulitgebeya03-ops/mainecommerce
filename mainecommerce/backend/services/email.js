@@ -1,15 +1,22 @@
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 
-let _resend = null;
-function getClient() {
-  if (!_resend && process.env.RESEND_API_KEY) {
-    _resend = new Resend(process.env.RESEND_API_KEY);
+let _transporter = null;
+function getTransporter() {
+  if (!_transporter && process.env.SMTP_USER && process.env.SMTP_PASS) {
+    _transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
   }
-  return _resend;
+  return _transporter;
 }
 
-const FROM_EMAIL = process.env.EMAIL_FROM || 'GULIT Gebeya <orders@gulitgebeya.com>';
+const FROM_EMAIL = process.env.SMTP_USER || 'onboarding@resend.dev';
 const STORE_NAME = 'GULIT Gebeya';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || '';
 
 function buildOrderItemsHtml(products = []) {
   if (!products.length) return '<p style="color:#6b7280;font-size:13px;">No items.</p>';
@@ -74,26 +81,32 @@ function baseLayout(title, bodyHtml) {
 }
 
 async function sendEmail({ to, subject, html }) {
-  const client = getClient();
-  if (!client) {
-    console.warn('[email] RESEND_API_KEY not set – skipping email to', to);
+  const transporter = getTransporter();
+  if (!transporter) {
+    console.warn('[email] SMTP credentials not set – skipping email to', to);
     return null;
   }
-  if (!to || !to.trim()) {
+  if (!to || (Array.isArray(to) && !to.length)) {
     console.warn('[email] No recipient address provided – skipping.');
     return null;
   }
+
+  const recipients = Array.isArray(to) ? to.filter(Boolean) : [to];
+  if (ADMIN_EMAIL && !recipients.includes(ADMIN_EMAIL)) {
+    recipients.push(ADMIN_EMAIL);
+  }
+
   try {
-    const result = await client.emails.send({
-      from: FROM_EMAIL,
-      to: to.trim(),
+    const result = await transporter.sendMail({
+      from: `"${STORE_NAME}" <${FROM_EMAIL}>`,
+      to: recipients.join(', '),
       subject,
       html,
     });
-    console.log('[email] Sent to', to, '— id:', result?.data?.id);
+    console.log('[email] Sent to', recipients.join(', '), '— messageId:', result.messageId);
     return result;
   } catch (err) {
-    console.error('[email] Failed to send to', to, err?.message || err);
+    console.error('[email] Failed to send to', recipients.join(', '), err?.message || err);
     return null;
   }
 }

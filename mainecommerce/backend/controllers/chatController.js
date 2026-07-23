@@ -1,7 +1,7 @@
 const axios = require('axios');
 const Product = require('../models/Product');
 
-const FREE_MODEL = 'openrouter/free';
+const FREE_MODEL = 'meta-llama/llama-3-8b-instruct:free';
 const STORE_SYSTEM_PROMPT = `You are the virtual assistant for GULIT, an e-commerce store. Answer questions only about the store, products, ordering, shipping, payments, returns, customer support, and account access. Keep replies focused on GULIT's shop policies, product categories, and buying experience. If users ask unrelated questions, politely explain that you can only help with GULIT store-related topics. Use the current inventory and pricing data provided in the context when answering questions about stock, pricing, availability, and product details.`;
 
 async function buildInventoryContext() {
@@ -86,11 +86,11 @@ function buildFallbackReply(message) {
   const text = String(message || '').toLowerCase();
 
   if (!text.trim()) {
-    return `Hi! I’m ${STORE_PROFILE.name}’s assistant. I can help with products, prices, orders, payments, and delivery.`;
+    return `Hi! I'm ${STORE_PROFILE.name}'s assistant. I can help with products, prices, orders, payments, and delivery.`;
   }
 
   if (text.includes('hello') || text.includes('hi') || text.includes('hey')) {
-    return `Hello! I’m ${STORE_PROFILE.name}’s assistant. I can help you browse products, check prices, place orders, and learn about delivery.`;
+    return `Hello! I'm ${STORE_PROFILE.name}'s assistant. I can help you browse products, check prices, place orders, and learn about delivery.`;
   }
 
   if (text.includes('about') || text.includes('who are you') || text.includes('what is gulit')) {
@@ -167,6 +167,7 @@ exports.chat = async (req, res) => {
       'https://openrouter.ai/api/v1/chat/completions',
       {
         model: FREE_MODEL,
+        max_tokens: 300,
         messages: [...systemMessages, ...contextMessages, ...conversationMessages],
       },
       {

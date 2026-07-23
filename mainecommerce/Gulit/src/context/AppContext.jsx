@@ -191,23 +191,25 @@ export const AppProvider = ({ children }) => {
   ]);
 
   useEffect(() => {
-    if (storedAuth?.token) {
-      setAccessToken(storedAuth.token);
+    if (authToken) {
+      setAccessToken(authToken);
     }
 
     let cancelled = false;
     async function loadData() {
       try {
-        const isCustomer = storedAuth?.user?.role === 'customer';
+        const isCustomer = userRole === 'customer';
         const apiCalls = [
           apiFetchProducts(),
           apiFetchRegisteredCustomers(),
         ];
-        if (isCustomer) {
+        if (authToken && isCustomer) {
           apiCalls.push(apiFetchMyOrders());
           apiCalls.push(apiFetchWishlist().catch(() => []));
-        } else {
+        } else if (authToken) {
           apiCalls.push(apiFetchOrders());
+        } else {
+          apiCalls.push(Promise.resolve([]));
         }
         const [apiProducts, apiRegisteredCustomersResult, apiOrders, apiWishlistResult] = await Promise.allSettled(apiCalls);
         if (cancelled) return;
@@ -237,7 +239,7 @@ export const AppProvider = ({ children }) => {
     }
     loadData();
     return () => { cancelled = true; };
-  }, [storedAuth?.token]);
+  }, [authToken, userRole]);
 
   useEffect(() => {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
